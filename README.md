@@ -1,3 +1,25 @@
+### Some preliminary experiments with regularizing hierarchical CPC models. 
+
+Based on the observation that the acoustic information, e.g., phones, changes slower than the feature extraction rate in CPC, regularization techniques that impose [slowness constraints](https://arxiv.org/pdf/2304.05974.pdf) on the features have been proposed. Regularizing CPC features improves performance on downstream tasks like ABX, Linear phone classification. 
+
+We add [Left-or-Right (LorR)](https://arxiv.org/pdf/2304.05974.pdf) regularization to the [Hierarchical CPC (HCPC)](https://arxiv.org/abs/2206.02211) model. The LorR loss is computed on the features from the lower CPC in HCPC. The overall loss of the model is given as $` \mathcal{L}_{\textrm{HCPC+LorR}} = \mathcal{L}_{\textrm{HCPC}} + \alpha \mathcal{L}_{\textrm{LorR}} `$ where $`\alpha`$ is the regularization weight. 
+
+| model | LorR weight ($`\alpha`$) | Test Acc |
+| --- | --- | --- |
+| HCPC base| - | 66.93 | 
+| HCPC + LorR | 0.2 | 69.62 | 
+| HCPC + LorR | 0.4 | 74.50 | 
+| HCPC + LorR | 0.6 | 74.01 | 
+| HCPC + LorR | 0.8 | 72.08 | 
+| HCPC + LorR | 1.0 | 66.14 | 
+
+The regularization improves the phone classification performance. Larger weights degrade the performance and the model performance is highest for $`\alpha = 0.4`$. The two models HCPC and HCPC + LorR have same number of parameters and are trained for same number of epochs (50). The LorR regularization loss is added after 1 epoch of training. The phone classifier is trained on features extracted from the last epoch (50th epoch). 
+
+More details about Hierarchical CPC (HCPC) and LorR can be found below:
+HCPC: [Variable-rate hierarchical CPC leads to acoustic unit discovery in speech](https://arxiv.org/abs/2206.02211)
+
+LorR: [Regularizing Contrastive Predictive Coding for Speech Applications](https://arxiv.org/pdf/2304.05974.pdf)
+
 This code is based on `CPC_audio` (<https://github.com/facebookresearch/CPC_audio>) and it implements the Contrast Predictive Coding algorithm on audio data, as described in the paper [Unsupervised Pretraining Transfers well Across Languages](https://arxiv.org/abs/2002.02848). This is an unsupervised method to train audio features directly from the raw waveform.
 
 ## Setup instructions
